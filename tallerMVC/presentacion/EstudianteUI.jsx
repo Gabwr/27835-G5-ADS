@@ -1,84 +1,34 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { EstudianteService } from '../logica_negocio/EstudianteServicio'
+import Formulario from './Formulario/FormularioUI';
 import './App.css';
-const controlador=new EstudianteService();
+
 function App() {
+  const controlador=new EstudianteService();
+  const formCrearRef = useRef(null);
+  const formModificarRef = useRef(null);
+  const formEliminarRef = useRef(null);
   const [estudiantes, setEstudiantes] = useState([]);
-  const [id_es,setId]=useState("");
-  const [nombre_es,setNombre]=useState("");
-  const [edad_es,setEdad]=useState(0);
-  const [formulario_crear_abierto,setFormularioCrearAbierto]=useState(false);
-  const [formulario_modificar_abierto,setFormularioModificarAbierto]=useState(false);
-  const [formulario_eliminar_abierto,setFormularioEliminarAbierto]=useState(false);
 
   const abrirFormularioCrear = () => {
-    setFormularioCrearAbierto(true);
-    setFormularioEliminarAbierto(false);
-    setFormularioModificarAbierto(false);
-  };
-  const cerrarFormularioCrear = () => {
-    setFormularioCrearAbierto(false);
-    setNombre("");
-    setEdad(0);
+    formCrearRef.current.abrirFormulario();
+    formModificarRef.current.cerrarFormulario();
+    formEliminarRef.current.cerrarFormulario();
   };
   const abrirFormularioModificar = () => {
-    obtenerEstudiantes();
-    setFormularioModificarAbierto(true);
-    setFormularioCrearAbierto(false);
-    setFormularioEliminarAbierto(false);
-  };
-  const cerrarFormularioModificar = () => {
-    setFormularioModificarAbierto(false);
-    setNombre("");
-    setEdad(0);
+    formModificarRef.current.abrirFormulario();
+    formCrearRef.current.cerrarFormulario();
+    formEliminarRef.current.cerrarFormulario();
   };
   const abrirFormularioEliminar = () => {
-    obtenerEstudiantes();
-    setFormularioEliminarAbierto(true);
-    setFormularioCrearAbierto(false);
-    setFormularioModificarAbierto(false);
+    formEliminarRef.current.abrirFormulario();
+    formCrearRef.current.cerrarFormulario();
+    formModificarRef.current.cerrarFormulario();
   };
-  const cerrarFormularioEliminar = () => {
-    setFormularioEliminarAbierto(false);
-    setNombre("");
-    setEdad(0);
-  }
 
-  let formularioCrear = (formulario_crear_abierto? "container m-auto py-4 py-8 w-fit" : "hidden");
-  let formularioEliminar = (formulario_eliminar_abierto ? "container m-auto py-4 py-8 w-fit" : "hidden");
-  let formularioModificar = (formulario_modificar_abierto ? "container m-auto py-4 py-8 w-fit" : "hidden");
   const obtenerEstudiantes = () =>{
     setEstudiantes(controlador.listar());
   }
-
-  const agregarEstudiante = () =>{
-    controlador.registrar(nombre_es,edad_es);
-    setNombre("");
-    setEdad(0);
-    cerrarFormularioCrear();
-    obtenerEstudiantes();
-  }
-
-  const buscarEstudiante = (id) =>{
-    const estudiante = controlador.obtener_por_id(id);
-    console.log(estudiante.nombre);
-    setNombre(estudiante.nombre);
-    console.log(estudiante.edad);
-    setEdad(estudiante.edad);
-  }
-  const modificarEstudiante = (id_estudiante) =>{
-    controlador.modificar_con_id(id_estudiante, nombre_es, edad_es);
-    cerrarFormularioModificar();
-    obtenerEstudiantes();
-  };
-
-
-  const eliminarEstudiante = (id_estudiante) =>{
-    controlador.eliminar(id_estudiante);
-    cerrarFormularioEliminar();
-    obtenerEstudiantes();
-  }
-
   
   useEffect(() => {
         obtenerEstudiantes();
@@ -102,92 +52,15 @@ function App() {
       
       {/*Formulario para agregar estudiante*/}
 
-      <div className={formularioCrear}>
-        <h2 className='text-center'></h2>
-        <div className=' columns-2 gap-4'>
-          <div>
-            <label>Nombre:</label>
-            <input type='text' className=' border-2' value={nombre_es} onChange={(e)=>{setNombre(e.target.value)}}/>
-          </div>
-          <div>
-            <label>Edad:</label>
-            <input type='number' className=' border-2' value={edad_es} onChange={(e)=>{setEdad(e.target.value)}}/>
-          </div>
-        </div>
-        <div className='justify-items-center m-auto w-fit my-3 py-2 gap-2'>
-          <button className='mx-1 border border-white hover:bg-blue-950' onClick={agregarEstudiante}>Agregar</button>
-          <button className='mx-1 border border-white hover:bg-red-950 hover:border-red-500' onClick={cerrarFormularioCrear}>Cancelar</button>
-        </div>
-      </div>
-
+      <Formulario tipo={"crear"} control={controlador} onChange={obtenerEstudiantes} ref={formCrearRef}/>
 
       {/*Formulario para eliminar estudiante*/}
 
-      <div className={formularioEliminar}>
-        <h2 className='text-center'></h2>
-        <div className='container w-fit items-center my-2'>
-          <label>Id del estudiante:</label>
-          <select defaultValue=" " onChange={(e)=>{setId(e.target.value); buscarEstudiante(e.target.value);}}>
-             <option value="">
-                </option>
-            {
-              estudiantes.map((estudiante) => (
-                <option key={estudiante.id} value={estudiante.id}>
-                  {estudiante.id}
-                </option>
-              ))
-            }
-          </select>
-        </div>
-        <div className=' columns-2 gap-4'>
-          <div>
-            <label>Nombre:</label>
-            <input type='text' className=' border-2' value={nombre_es} readOnly onChange={(e)=>{setNombre(e.target.value)}}/>
-          </div>
-          <div>
-            <label>Edad:</label>
-            <input type='number' className=' border-2' value={edad_es} readOnly onChange={(e)=>{setEdad(e.target.value)}}/>
-          </div>
-        </div>
-        <div className='justify-items-center m-auto w-fit my-3 py-2 gap-2'>
-          <button className='mx-1 border border-white hover:bg-blue-950' onClick={()=>eliminarEstudiante(id_es)}>Eliminar</button>
-          <button className='mx-1 border border-white hover:bg-red-950 hover:border-red-500' onClick={cerrarFormularioEliminar}>Cancelar</button>
-        </div>
-      </div>
-
+      <Formulario tipo={"eliminar"} controlador={controlador} onChange={obtenerEstudiantes} ref={formEliminarRef}/>
 
       {/*Formulario para modificar estudiante*/}
-      <div className={formularioModificar}>
-        <h2 className='text-center'></h2>
-        <div className='container w-fit items-center my-2'>
-          <label>Id del estudiante:</label>
-          <select defaultValue=" " onChange={(e)=>{setId(e.target.value); buscarEstudiante(e.target.value);}}>
-             <option value="">
-                </option>
-            {
-              estudiantes.map((estudiante) => (
-                <option key={estudiante.id} value={estudiante.id}>
-                  {estudiante.id}
-                </option>
-              ))
-            }
-          </select>
-        </div>
-        <div className=' columns-2 gap-4'>
-          <div>
-            <label>Nombre:</label>
-            <input type='text' className=' border-2' value={nombre_es} onChange={(e)=>{setNombre(e.target.value)}}/>
-          </div>
-          <div>
-            <label>Edad:</label>
-            <input type='number' className=' border-2' value={edad_es} onChange={(e)=>{setEdad(e.target.value)}}/>
-          </div>
-        </div>
-        <div className='justify-items-center m-auto w-fit my-3 py-2 gap-2'>
-          <button className='mx-1 border border-white hover:bg-blue-950' onClick={()=>modificarEstudiante(id_es)}>Modificar</button>
-          <button className='mx-1 border border-white hover:bg-red-950 hover:border-red-500' onClick={cerrarFormularioModificar}>Cancelar</button>
-        </div>
-      </div>
+      
+      <Formulario tipo={"modificar"} control={controlador} onChange={obtenerEstudiantes} ref={formModificarRef}/>
 
       <div className='container m-auto w-full items-center justify-center mt-4'>
         <table border={1} className='table-auto m-auto border-gray-100 border-2'>
