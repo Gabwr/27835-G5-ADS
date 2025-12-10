@@ -21,5 +21,8 @@ app.use(cors());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
+const rutas_usuario = require('./controlador/rutas/usuario_rutas');
+
+app.use('/usuario',rutas_usuario);
 
 app.listen(port,() => console.log("Sistema corriendo en --> "+port));
