@@ -5,23 +5,19 @@ const isProduction = process.env.NODE_ENV === 'production';
 
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
-  ssl: isProduction
-    ? { rejectUnauthorized: false }
-    : false,
+  ssl: isProduction ? { rejectUnauthorized: false } : false,
+  // Configuración específica para proveedores como Render
+  max: 10,                          
+  min: 0,                           
+  idleTimeoutMillis: 10000,         
+  connectionTimeoutMillis: 10000,   
+  keepAlive: true,                  
+  keepAliveInitialDelayMillis: 0,   
+});
+
+// Handler para errores en conexiones idle
+pool.on('error', (err, client) => {
+  console.error('Error inesperado en cliente idle del pool:', err.message, err.stack);
 });
 
 module.exports = pool;
-
-const testConnection = async () => {
-  try {
-    const client = await pool.connect();
-    console.log('Conexión exitosa a la base de datos');
-    const res = await client.query('SELECT version()');
-    console.log('Versión de PostgreSQL:', res.rows[0].version);
-    client.release(); 
-  } catch (err) {
-    console.error('Error al conectar a la base de datos:', err.stack);
-  } 
-};
-
-testConnection();
