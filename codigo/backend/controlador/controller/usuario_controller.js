@@ -1,4 +1,4 @@
-const { servicio_usuario } = require('../servicios/usuario_servicio');
+const { usuario_servicio } = require('../servicios/usuario_servicio');
 const { generar_token } = require('../middleware/auth');
 const bcrypt = require('bcrypt');
 const pool = require('../../modelos/base_de_datos/db_pool');
@@ -41,12 +41,18 @@ exports.loginUser = async (req, res) => {
 
 exports.update_user = async (req,res) => {
   const {id} = req.params;
+  const {new_password} = req.body;
   if (!id || id === undefined || id === null || id === '') {
     return res.status(400).json({ error: 'ID de usuario no proporcionado' });
   }
+  if (!new_password || new_password === undefined || new_password === null || new_password === '') {
+    return res.status(400).json({ error: 'nueva contraseña no proporcionada' });
+  }
   try {
-    const values = [id];
-    const result = await UserServices.updateUser(values);
+    const saltRounds = 10; 
+    const hashed_password = await bcrypt.hash(new_password, saltRounds);
+    const values = [hashed_password,id];
+    const result = await usuario_servicio.actualizar_usuario(values);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Usuario no encontrado' });

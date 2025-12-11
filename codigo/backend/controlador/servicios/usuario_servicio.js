@@ -1,3 +1,4 @@
+
 function sanitize(str) {
   return String(str)
     .replace(/&/g, "&amp;")
@@ -7,8 +8,15 @@ function sanitize(str) {
     .replace(/>/g, "&gt;");
 }
 
-async function updateUser(values) { 
-    const query = 'UPDATE usuario SET profiles_id = $1 WHERE users_id = $2'
+async function actualizar_usuario(values) { 
+    const query = 'UPDATE usuario SET usuario_contrasenia = $1 WHERE usuario_id = $2'
     ;
     return await pool.query(query, values)
 }
+
+const usuario_servicio = {
+  sanitize,
+  actualizar_usuario
+}
+
+module.exports = { usuario_servicio};
