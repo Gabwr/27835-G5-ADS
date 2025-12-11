@@ -6,7 +6,7 @@ import logout_modal from "../modal/logout";
 export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, token } = useAuth();
+  const { user, token, logout } = useAuth();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -50,7 +50,7 @@ export default function Menu() {
               <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
                 <button
                   onClick={() => {
-                    navigate("/userInfo");
+                    navigate("/perfi");
                     setDropdownOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -60,6 +60,7 @@ export default function Menu() {
                 <hr className="my-1" />
                 <button
                   onClick={() => {
+                    logout();
                     setDropdownOpen(false);
                   }}
                   className="block w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100"
