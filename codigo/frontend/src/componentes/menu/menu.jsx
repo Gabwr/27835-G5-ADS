@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/auth_context";
-import logout_modal from "../modal/logout"; 
+import logout_modal from "../modal/logout";
 
 export default function Menu() {
   const navigate = useNavigate();
@@ -43,7 +43,7 @@ export default function Menu() {
               <span className="hidden sm:inline">
                 {user ? `${user.usuario}` : ""}
               </span>
-              <i className="text-2xl"></i> 
+              <i className="text-2xl"></i>
             </button>
 
             {dropdownOpen && (
@@ -75,11 +75,10 @@ export default function Menu() {
 
       <nav className="bg-purple-400 text-white sticky top-0 shadow-md z-40">
         <div className="container mx-auto px-4">
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-4 py-4 text-center">
+          <ul className="grid grid-cols-1 md:grid-cols-3 gap-4 py-4 text-center">
             <li
-              className={`py-3 rounded-lg transition ${
-                isActive("/jaulas") ? "bg-blue-600" : "hover:bg-gray-700"
-              }`}
+              className={`py-3 rounded-lg transition ${isActive("/jaulas") ? "bg-blue-600" : "hover:bg-gray-700"
+                }`}
             >
               <button
                 onClick={() => navigate("/jaulas")}
@@ -90,17 +89,30 @@ export default function Menu() {
             </li>
 
             <li
-              className={`py-3 rounded-lg transition ${
-                location.pathname.startsWith("/reportes")
-                  ? "bg-blue-600"
-                  : "hover:bg-gray-700"
-              }`}
+              className={`py-3 rounded-lg transition ${location.pathname.startsWith("/reportes")
+                ? "bg-blue-600"
+                : "hover:bg-gray-700"
+                }`}
             >
               <button
                 onClick={() => navigate("/reportes")}
                 className="w-full flex items-center justify-center gap-2 text-lg font-semibold"
               >
                 <i className="text-xl"></i> Reportes
+              </button>
+            </li>
+
+            <li
+              className={`py-3 rounded-lg transition ${location.pathname.startsWith("/cuidados")
+                ? "bg-blue-600"
+                : "hover:bg-gray-700"
+                }`}
+            >
+              <button
+                onClick={() => navigate("/cuidados")}
+                className="w-full flex items-center justify-center gap-2 text-lg font-semibold"
+              >
+                <i className="text-xl"></i> Manejo de cuidados
               </button>
             </li>
           </ul>
