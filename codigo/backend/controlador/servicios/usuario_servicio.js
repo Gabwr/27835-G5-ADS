@@ -58,6 +58,8 @@ async function actualizar_contrasenia(usuario_id, contrasenia_plana) {
   );
 
   if (updated === 0) throw new Error('Usuario no encontrado');
+
+  return updated;
 }
 
 async function validar_contrasenia(contrasenia_plana, hash_almacenado) {

@@ -8,7 +8,7 @@ exports.login_user = async (req, res) => {
 
   try {
     const user = await usuario_servicio.obtener_usuario_por_username(username);
-
+    
     if (!user) {
       await usuario_servicio.registrar_log("SiD0110110", 'LOGIN_FALLIDO', `Usuario no encontrado: ${username}`);
       return res.status(401).json({ message: 'Usuario no encontrado' });
@@ -21,8 +21,12 @@ exports.login_user = async (req, res) => {
         message: 'Cuenta bloqueada temporalmente. Intenta de nuevo en 30 minutos.' 
       });
     }
+    console.log('Usuario encontrado:', user.usuario_usuario);
+    console.log('Hash almacenado en BD (longitud):', user.usuario_contrasenia?.length);
+    console.log('Contraseña ingresada (longitud):', password.length);
 
-    const isValidPassword = await bcrypt.compare(password, user.usuario_contrasenia);
+      const isValidPassword = await bcrypt.compare(password, user.usuario_contrasenia);
+      console.log('¿Coinciden las contraseñas?', isValidPassword);
     if (!isValidPassword) {
       await usuario_servicio.incrementar_intentos_fallidos(user.usuario_id, user.failed_attempts || 0);
       return res.status(401).json({ message: 'Contraseña incorrecta' });
@@ -55,10 +59,7 @@ exports.update_user = async (req,res) => {
     return res.status(400).json({ error: 'nueva contraseña no proporcionada' });
   }
   try {
-    const saltRounds = 10; 
-    const hashed_password = await bcrypt.hash(new_password, saltRounds);
-    const values = [hashed_password,id];
-    const result = await usuario_servicio.actualizar_usuario(values);
+    const result = await usuario_servicio.actualizar_contrasenia(id, new_password);
 
     if (result.rowCount === 0) {
       return res.status(404).json({ message: 'Usuario no encontrado' });
