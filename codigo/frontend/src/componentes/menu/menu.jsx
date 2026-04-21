@@ -1,12 +1,15 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../../context/auth_context";
-import logout_modal from "../modal/logout";
+import {logout_modal as Logout_modal}  from "../modal/logout";
+import { use_inactivity_timeout } from "../../hooks/login_timeout";
 import { IoPerson } from "react-icons/io5";
 export default function Menu() {
   const navigate = useNavigate();
   const location = useLocation();
   const { user, token, logout } = useAuth();
+
+  use_inactivity_timeout();
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef(null);
@@ -131,7 +134,7 @@ export default function Menu() {
         </div>
       </nav>
 
-      <logout_modal />
+      <Logout_modal />
     </>
   );
 }

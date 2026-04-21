@@ -21,12 +21,8 @@ exports.login_user = async (req, res) => {
         message: 'Cuenta bloqueada temporalmente. Intenta de nuevo en 30 minutos.' 
       });
     }
-    console.log('Usuario encontrado:', user.usuario_usuario);
-    console.log('Hash almacenado en BD (longitud):', user.usuario_contrasenia?.length);
-    console.log('Contraseña ingresada (longitud):', password.length);
 
       const isValidPassword = await bcrypt.compare(password, user.usuario_contrasenia);
-      console.log('¿Coinciden las contraseñas?', isValidPassword);
     if (!isValidPassword) {
       await usuario_servicio.incrementar_intentos_fallidos(user.usuario_id, user.failed_attempts || 0);
       return res.status(401).json({ message: 'Contraseña incorrecta' });
